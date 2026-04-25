@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link in Bio Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&family=Roboto:wght@400;500;700&family=Space+Grotesk:wght@500;700&family=Raleway:wght@400;600;700&family=Montserrat:wght@400;600;700&family=Oswald:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; }
+    
+    .container { display: grid; grid-template-columns: 1fr 1fr; height: 100vh; }
+    
+    /* FORM SECTION */
+    .form-section { padding: 2rem; overflow-y: auto; background: #16213e; }
+    .form-section h1 { font-size: 1.5rem; margin-bottom: 1.5rem; color: #e94560; }
+    
+    .field { margin-bottom: 1rem; }
+    .field label { display: block; font-size: 0.85rem; color: #a0a0a0; margin-bottom: 0.3rem; }
+    .field input, .field textarea, .field select { width: 100%; padding: 0.6rem; border: 1px solid #2a2a4a; border-radius: 8px; background: #1a1a2e; color: #e0e0e0; font-size: 0.9rem; }
+    .field textarea { resize: vertical; min-height: 60px; }
+    
+    .templates { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 1rem; }
+    .template-btn { padding: 0.7rem; border: 2px solid transparent; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: 600; transition: all 0.2s; }
+    .template-btn.active { border-color: #e94560; }
+    .template-btn.dark { background: #1a1a2e; color: #fff; }
+    .template-btn.light { background: #f5f5f5; color: #333; }
+    .template-btn.minimal { background: #fff; color: #000; border-color: #eee; }
+    .template-btn.colorful { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+    
+    .links-header { display: flex; justify-content: space-between; align-items: center; margin: 1.5rem 0 0.5rem; }
+    .links-header h3 { font-size: 0.9rem; color: #a0a0a0; }
+    .add-link-btn { background: #e94560; color: #fff; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+    
+    .link-item { background: #1a1a2e; padding: 0.8rem; border-radius: 8px; margin-bottom: 0.5rem; border: 1px solid #2a2a4a; }
+    .link-item input { margin-bottom: 0.4rem; }
+    
+    .icon-picker { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-top: 0.4rem; }
+    .icon-option { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: 2px solid #2a2a4a; border-radius: 6px; cursor: pointer; font-size: 1rem; background: #16213e; }
+    .icon-option.selected { border-color: #e94560; background: #e94560; }
+    
+    .actions { display: flex; gap: 0.5rem; margin-top: 1.5rem; }
+    .btn { padding: 0.8rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+    .btn-preview { background: #4a4a6a; color: #fff; }
+    .btn-export { background: #e94560; color: #fff; }
+    
+    .mobile-toggle { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+    .mobile-toggle input[type="checkbox"] { width: 20px; height: 20px; }
+    
+    /* PREVIEW SECTION */
+    .preview-section { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; background: #0f0f23; }
+    .preview-label { font-size: 0.8rem; color: #666; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px; }
+    
+    .phone-frame { width: 280px; height: 560px; background: #000; border-radius: 40px; padding: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); transition: all 0.3s; }
+    .phone-frame.mobile-view { width: 100%; max-width: 280px; }
+    .phone-screen { width: 100%; height: 100%; border-radius: 32px; overflow: hidden; transition: all 0.3s; }
+    
+    /* TEMPLATE STYLES */
+    .preview-content { padding: 2rem 1.2rem; text-align: center; min-height: 100%; display: flex; flex-direction: column; align-items: center; }
+    .preview-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1rem; }
+    .preview-avatar-placeholder { width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.2); margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+    .preview-name { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .preview-bio { font-size: 0.85rem; opacity: 0.85; margin-bottom: 1.5rem; line-height: 1.4; }
+    .preview-links { width: 100%; display: flex; flex-direction: column; gap: 0.8rem; }
+    .preview-link { display: flex; align-items: center; gap: 0.6rem; padding: 0.9rem 1rem; border-radius: 12px; text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: transform 0.2s; }
+    .preview-link:hover { transform: scale(1.02); }
+    .preview-link-icon { font-size: 1.2rem; }
+    
+    /* DARK TEMPLATE */
+    .tpl-dark { background: #1a1a2e; color: #fff; }
+    .tpl-dark .preview-link { background: #16213e; color: #fff; }
+    
+    /* LIGHT TEMPLATE */
+    .tpl-light { background: #f8f9fa; color: #333; }
+    .tpl-light .preview-link { background: #fff; color: #333; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    
+    /* MINIMAL TEMPLATE */
+    .tpl-minimal { background: #ffffff; color: #000; }
+    .tpl-minimal .preview-link { background: #f5f5f5; color: #333; border: 1px solid #e0e0e0; }
+    
+    /* COLORFUL TEMPLATE */
+    .tpl-colorful { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+    .tpl-colorful .preview-link { background: rgba(255,255,255,0.2); color: #fff; backdrop-filter: blur(10px); }
+    
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .container { grid-template-columns: 1fr; }
+      .preview-section { order: -1; padding: 1rem; }
+      .phone-frame { width: 260px; height: 520px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- FORM -->
+    <div class="form-section">
+      <h1>🔗 Link in Bio Builder</h1>
+      
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="name" placeholder="Your name" value="Alex Rivera">
+      </div>
+      
+      <div class="field">
+        <label>Avatar URL</label>
+        <input type="text" id="avatar" placeholder="https://example.com/avatar.jpg" value="https://i.pravatar.cc/150?img=12">
+      </div>
+      
+      <div class="field">
+        <label>Bio</label>
+        <textarea id="bio" placeholder="A short bio about yourself">Digital creator & travel enthusiast 🌍 Exploring the world one frame at a time</textarea>
+      </div>
+      
+      <div class="field">
+        <label>Google Font</label>
+        <select id="font">
+          <option value="Poppins">Poppins</option>
+          <option value="Inter">Inter</option>
+          <option value="Playfair Display">Playfair Display</option>
+          <option value="Roboto">Roboto</option>
+          <option value="Space Grotesk">Space Grotesk</option>
+          <option value="Raleway">Raleway</option>
+          <option value="Montserrat">Montserrat</option>
+          <option value="Oswald">Oswald</option>
+          <option value="Nunito">Nunito</option>
+        </select>
+      </div>
+      
+      <label style="font-size:0.85rem;color:#a0a0a0;margin-bottom:0.5rem;display:block;">Template</label>
+      <div class="templates">
+        <button class="template-btn dark active" data-tpl="dark">🌙 Dark</button>
+        <button class="template-btn light" data-tpl="light">☀️ Light</button>
+        <button class="template-btn minimal" data-tpl="minimal">⬜ Minimal</button>
+        <button class="template-btn colorful" data-tpl="colorful">🌈 Colorful</button>
+      </div>
+      
+      <div class="mobile-toggle">
+        <input type="checkbox" id="mobileToggle">
+        <label for="mobileToggle">📱 Mobile Preview</label>
+      </div>
+      
+      <div class="links-header">
+        <h3>🔗 Your Links</h3>
+        <button class="add-link-btn" onclick="addLink()">+ Add Link</button>
+      </div>
+      
+      <div id="linksList">
+        <div class="link-item">
+          <input type="text" placeholder="Title" class="link-title" value="My YouTube Channel">
+          <input type="text" placeholder="URL" class="link-url" value="https://youtube.com/@alexrivera">
+          <div class="icon-picker">
+            <div class="icon-option selected" data-icon="🔗">🔗</div>
+            <div class="icon-option" data-icon="📸">📸</div>
+            <div class="icon-option" data-icon="🎥">🎥</div>
+            <div class="icon-option" data-icon="📧">📧</div>
+            <div class="icon-option" data-icon="📱">📱</div>
+            <div class="icon-option" data-icon="💼">💼</div>
+            <div class="icon-option" data-icon="🛒">🛒</div>
+            <div class="icon-option" data-icon="🎓">🎓</div>
+            <div class="icon-option" data-icon="🎵">🎵</div>
+            <div class="icon-option" data-icon="🌐">🌐</div>
+            <div class="icon-option" data-icon="📦">📦</div>
+            <div class="icon-option" data-icon="🔴">🔴</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button class="btn btn-preview" onclick="showPreview()">👁 Preview</button>
+        <button class="btn btn-export" onclick="exportHTML()">📤 Export HTML</button>
+      </div>
+    </div>
+    
+    <!-- PREVIEW -->
+    <div class="preview-section">
+      <div class="preview-label">📱 Live Preview</div>
+      <div class="phone-frame" id="phoneFrame">
+        <div class="phone-screen tpl-dark" id="previewScreen">
+          <div class="preview-content" id="previewContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentTemplate = 'dark';
+    
+    // Live preview
+    function updatePreview() {
+      const name = document.getElementById('name').value || 'Your Name';
+      const avatar = document.getElementById('avatar').value;
+      const bio = document.getElementById('bio').value || 'Your bio here';
+      const font = document.getElementById('font').value;
+      
+      const links = document.querySelectorAll('.link-item');
+      let linksHTML = '<div class="preview-links">';
+      links.forEach(link => {
+        const title = link.querySelector('.link-title').value || 'Link';
+        const url = link.querySelector('.link-url').value || '#';
+        const icon = link.querySelector('.icon-option.selected')?.dataset.icon || '🔗';
+        linksHTML += `<a href="${url}" class="preview-link" target="_blank"><span class="preview-link-icon">${icon}</span><span>${title}</span></a>`;
+      });
+      linksHTML += '</div>';
+      
+      const avatarHTML = avatar 
+        ? `<img src="${avatar}" class="preview-avatar" alt="Avatar">`
+        : `<div class="preview-avatar-placeholder">👤</div>`;
+      
+      document.getElementById('previewContent').innerHTML = `
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=${font.replace(/ /g, '+')}:wght@400;600;700&display=swap');
+          #previewContent * { font-family: '${font}', sans-serif; }
+        </style>
+        ${avatarHTML}
+        <div class="preview-name">${name}</div>
+        <div class="preview-bio">${bio}</div>
+        ${linksHTML}
+      `;
+      
+      document.getElementById('previewScreen').className = 'phone-screen tpl-' + currentTemplate;
+    }
+    
+    // Template selection
+    document.querySelectorAll('.template-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.template-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentTemplate = btn.dataset.tpl;
+        updatePreview();
+      });
+    });
+    
+    // Mobile toggle
+    document.getElementById('mobileToggle').addEventListener('change', (e) => {
+      document.getElementById('phoneFrame').classList.toggle('mobile-view', e.target.checked);
+    });
+    
+    // Add link
+    function addLink() {
+      const div = document.createElement('div');
+      div.className = 'link-item';
+      div.innerHTML = `
+        <input type="text" placeholder="Title" class="link-title" value="New Link">
+        <input type="text" placeholder="URL" class="link-url" value="https://example.com">
+        <div class="icon-picker">
+          <div class="icon-option selected" data-icon="🔗">🔗</div>
+          <div class="icon-option" data-icon="📸">📸</div>
+          <div class="icon-option" data-icon="🎥">🎥</div>
+          <div class="icon-option" data-icon="📧">📧</div>
+          <div class="icon-option" data-icon="📱">📱</div>
+          <div class="icon-option" data-icon="💼">💼</div>
+          <div class="icon-option" data-icon="🛒">🛒</div>
+          <div class="icon-option" data-icon="🎓">🎓</div>
+          <div class="icon-option" data-icon="🎵">🎵</div>
+          <div class="icon-option" data-icon="🌐">🌐</div>
+          <div class="icon-option" data-icon="📦">📦</div>
+          <div class="icon-option" data-icon="🔴">🔴</div>
+        </div>
+      `;
+      document.getElementById('linksList').appendChild(div);
+      bindIconPickers();
+      updatePreview();
+    }
+    
+    // Icon picker binding
+    function bindIconPickers() {
+      document.querySelectorAll('.icon-option').forEach(opt => {
+        opt.onclick = () => {
+          opt.parentElement.querySelectorAll('.icon-option').forEach(o => o.classList.remove('selected'));
+          opt.classList.add('selected');
+          updatePreview();
+        };
+      });
+    }
+    bindIconPickers();
+    
+    // Input listeners for live update
+    ['name', 'avatar', 'bio', 'font'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updatePreview);
+    });
+    document.getElementById('linksList').addEventListener('input', updatePreview);
+    
+    // Show preview (scroll to preview)
+    function showPreview() {
+      document.querySelector('.preview-section').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Export HTML
+    function exportHTML() {
+      const name = document.getElementById('name').value || 'Your Name';
+      const avatar = document.getElementById('avatar').value;
+      const bio = document.getElementById('bio').value || 'Your bio here';
+      const font = document.getElementById('font').value;
+      
+      const links = document.querySelectorAll('.link-item');
+      let linksHTML = '';
+      links.forEach(link => {
+        const title = link.querySelector('.link-title').value || 'Link';
+        const url = link.querySelector('.link-url').value || '#';
+        const icon = link.querySelector('.icon-option.selected')?.dataset.icon || '🔗';
+        linksHTML += `    <a href="${url}" class="preview-link" target="_blank"><span class="preview-link-icon">${icon}</span><span>${title}</span></a>\n`;
+      });
+      
+      const bgColor = { dark: '#1a1a2e', light: '#f8f9fa', minimal: '#ffffff', colorful: 'linear-gradient(135deg, #667eea, #764ba2)' }[currentTemplate];
+      const colorfulStyle = currentTemplate === 'colorful' ? `background: ${bgColor};` : `background-color: ${bgColor};`;
+      
+      const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${name} | Link in Bio</title>
+  <link href="https://fonts.googleapis.com/css2?family=${font.replace(/ /g, '+')}:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: '${font}', sans-serif; ${colorfulStyle} color: ${currentTemplate === 'dark' ? '#fff' : '#333'}; min-height: 100vh; display: flex; justify-content: center; padding: 2rem 1rem; }
+    .container { max-width: 480px; width: 100%; text-align: center; padding: 2rem 0; }
+    .avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 1.5rem; border: 3px solid ${currentTemplate === 'colorful' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.1)'}; }
+    .name { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .bio { font-size: 0.95rem; opacity: 0.85; margin-bottom: 2rem; line-height: 1.5; }
+    .links { display: flex; flex-direction: column; gap: 0.8rem; }
+    .preview-link { display: flex; align-items: center; gap: 0.8rem; padding: 1rem; border-radius: 12px; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: transform 0.2s; ${currentTemplate === 'dark' ? 'background: #16213e; color: #fff;' : currentTemplate === 'light' ? 'background: #fff; color: #333; box-shadow: 0 2px 10px rgba(0,0,0,0.1);' : currentTemplate === 'minimal' ? 'background: #f5f5f5; color: #333; border: 1px solid #e0e0e0;' : 'background: rgba(255,255,255,0.2); color: #fff; backdrop-filter: blur(10px);'} }
+    .preview-link:hover { transform: scale(1.03); }
+    .preview-link-icon { font-size: 1.3rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    ${avatar ? `<img src="${avatar}" class="avatar" alt="${name}">` : ''}
+    <div class="name">${name}</div>
+    <div class="bio">${bio}</div>
+    <div class="links">
+${linksHTML}    </div>
+  </div>
+</body>
+</html>`;
+      
+      const blob = new Blob([html], { type: 'text/html' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'link-in-bio.html';
+      a.click();
+    }
+    
+    // Init
+    updatePreview();
+  </script>
+</body>
+</html>
